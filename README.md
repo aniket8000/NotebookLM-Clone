@@ -8,12 +8,19 @@ Built with React (frontend) and Node.js + Express (backend), integrated with the
 ### 2. Features
 
 ✅ Upload and process large PDF files
+
 ✅ Built-in PDF viewer with page navigation
+
 ✅ Chat with your PDF — ask questions and get contextual answers
+
 ✅ Smart text extraction (with OCR fallback for scanned PDFs)
+
 ✅ Token-efficient backend using Gemini 2.5 Flash
+
 ✅ Real-time citations and clickable navigation (optional)
+
 ✅ Clean, responsive, professional UI with TailwindCSS
+
 ✅ Fully documented and deployable on Render + Netlify
 
 ---
