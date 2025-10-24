@@ -1,0 +1,9 @@
+/* theme.css - additional helper classes (imported by globals if needed) */
+:root {
+  --card-radius: 18px;
+  --glass-bg: rgba(255,255,255,0.6);
+}
+
+.dark { --glass-bg: rgba(10, 14, 20, 0.6); }
+
+.btn { @apply px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200; }
