@@ -6,14 +6,20 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
-// ✅ Always load backend/.env explicitly
-const envPath = path.resolve(__dirname, '../../.env');
-console.log('🧩 Attempting to load .env from:', envPath);
-console.log('📂 Exists?', fs.existsSync(envPath));
+// ✅ Load .env only in local/dev mode
+if (process.env.NODE_ENV !== 'production') {
+  const envPath = path.resolve(__dirname, '../../.env');
+  console.log('🧩 Loading local .env from:', envPath);
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+  } else {
+    console.warn('⚠️ Local .env not found, using system environment variables');
+  }
+} else {
+  console.log('🚀 Running in production — using Render environment variables');
+}
 
-dotenv.config({ path: envPath });
-
-// ✅ Debug check to verify environment loaded
+// ✅ Debug check (optional)
 console.log('🔑 GEMINI_API_KEY loaded:', process.env.GEMINI_API_KEY ? '✅' : '❌');
 console.log('🧠 Loaded keys:', Object.keys(process.env).filter(k => k.includes('GEMINI') || k.includes('MONGO')));
 
