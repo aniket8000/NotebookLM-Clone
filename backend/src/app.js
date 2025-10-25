@@ -11,7 +11,7 @@ const app = express();
 // ✅ Allowed domain patterns (Netlify + localhost)
 const allowedOrigins = [
   /^http:\/\/localhost(:\d+)?$/,            // local dev
-  /^https:\/\/notebooklm(-+[\w-]+)?\.netlify\.app$/ // all Netlify deploy URLs
+  /^https:\/\/notebookllm(-+[\w-]+)?\.netlify\.app$/ // all Netlify deploy URLs
 ];
 
 // ✅ Enhanced CORS
