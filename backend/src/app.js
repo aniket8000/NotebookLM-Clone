@@ -1,4 +1,3 @@
-// src/app.js
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
@@ -9,20 +8,25 @@ const queryRoutes = require("./routes/query.routes");
 
 const app = express();
 
-// ✅ Allowed origins (both local + deployed)
+// ✅ Allowed domain patterns (Netlify + localhost)
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://notebooklm.netlify.app",
+  /^http:\/\/localhost(:\d+)?$/,            // local dev
+  /^https:\/\/notebooklm(-+[\w-]+)?\.netlify\.app$/ // all Netlify deploy URLs
 ];
 
-// ✅ Correct CORS middleware (Render-safe)
+// ✅ Enhanced CORS
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like Postman)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("Not allowed by CORS"));
+      if (!origin) return callback(null, true); // allow Postman / curl
+      const isAllowed = allowedOrigins.some((pattern) => pattern.test(origin));
+      if (isAllowed) {
+        console.log("✅ CORS allowed for:", origin);
+        return callback(null, true);
+      } else {
+        console.warn("🚫 Blocked CORS request from:", origin);
+        return callback(new Error("Not allowed by CORS"));
+      }
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -30,24 +34,18 @@ app.use(
   })
 );
 
-// ✅ Explicit OPTIONS handler (important for Render)
 app.options("*", cors());
 
-// ✅ Logging & JSON
 app.use(morgan("dev"));
 app.use(express.json({ limit: "10mb" }));
 
-// ✅ Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-// ✅ API routes
 app.use("/api/upload", uploadRoutes);
 app.use("/api/query", queryRoutes);
 
-// ✅ Health check
 app.get("/ping", (_, res) => res.json({ ok: true, time: Date.now() }));
 
-// ✅ Global error handler
 app.use((err, req, res, next) => {
   console.error("🔥 Unhandled error:", err.message);
   res.status(500).json({ error: err.message || "Server error" });
