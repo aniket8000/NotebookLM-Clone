@@ -6,7 +6,7 @@ import PdfHighlighter from "./PdfHighlighter";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Upload } from "lucide-react";
 
-// Configure PDF.js worker
+// ✅ Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 export default function PdfViewer() {
@@ -21,7 +21,13 @@ export default function PdfViewer() {
   if (hasDocument) {
     let cleanPath = doc.filePath.trim().replace(/\\/g, "/");
     if (!cleanPath.startsWith("/")) cleanPath = "/" + cleanPath;
-    src = `http://localhost:4000${cleanPath}`;
+
+    // ✅ Use correct backend domain (auto-detect env)
+    const backendBase =
+      import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:4000";
+
+    src = `${backendBase}${cleanPath}`;
+    console.log("📄 PDF source URL:", src);
   }
 
   const onDocumentLoadSuccess = ({ numPages }) => {
@@ -43,7 +49,7 @@ export default function PdfViewer() {
     if (input) input.click();
   };
 
-  // ✅ No PDF uploaded → show centered upload card
+  // 🧩 If no document → show upload screen
   if (!hasDocument) {
     return (
       <div
@@ -65,7 +71,7 @@ export default function PdfViewer() {
     );
   }
 
-  // ✅ PDF is uploaded → show PDF viewer only (no text rendering)
+  // ✅ If document exists → show viewer
   return (
     <div className="relative flex flex-col gap-4 h-full">
       <PageControls numPages={numPages || 1} />
