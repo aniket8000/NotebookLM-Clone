@@ -8,21 +8,21 @@ const queryRoutes = require("./routes/query.routes");
 
 const app = express();
 
-// ✅ Allowed origins
+// ✅ Define valid origins
 const allowedOrigins = [
-  "http://localhost:5173",             // Local dev
-  "https://notebooklm.netlify.app"     // Production frontend
+  "http://localhost:5173",
+  "https://notebooklm.netlify.app",
 ];
 
-// 🚀 Force CORS headers globally (Render proxy-safe)
+// ✅ Dynamic CORS (mirrors request origin)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
+
   if (allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin);
-  } else {
-    res.header("Access-Control-Allow-Origin", "https://notebooklm.netlify.app");
   }
 
+  res.header("Vary", "Origin");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header(
     "Access-Control-Allow-Headers",
@@ -30,7 +30,6 @@ app.use((req, res, next) => {
   );
   res.header("Access-Control-Allow-Credentials", "true");
 
-  // Handle preflight OPTIONS quickly
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
@@ -38,7 +37,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Logging & parsing
+// ✅ Middleware
 app.use(morgan("dev"));
 app.use(express.json({ limit: "10mb" }));
 
@@ -49,7 +48,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api/upload", uploadRoutes);
 app.use("/api/query", queryRoutes);
 
-// ✅ Health check endpoint
+// ✅ Health check
 app.get("/ping", (_, res) => res.json({ ok: true, time: Date.now() }));
 
 // ✅ Global error handler
